@@ -1,0 +1,86 @@
+package com.hightide.jsondatafile.types;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.Gson;
+import com.hightide.jsondatafile.JsonDataFile;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * A type for creating and managing JSON arrays (lists)
+ */
+public class JsonDataList {
+    private final JsonDataFile parent;
+    private final String name;
+    private final JsonArray array;
+    private final Gson gson = new Gson();
+
+    /**
+     * The constructor for the JsonDataList class.
+     * @param parent The JSON data file to add the list to
+     * @param name The name of the list
+     * @param array The data inside the list
+     */
+    public JsonDataList(JsonDataFile parent, String name, JsonArray array) {
+        this.parent = parent;
+        this.name = name;
+        this.array = array;
+    }
+
+    /**
+     * Adds a value to the JSON list.
+     * @param value The value to add to the list
+     * @throws IOException Thrown if the JSON data fails to save to the JSON file
+     */
+    public void add(Object value) throws IOException {
+        array.add(gson.toJsonTree(value));
+        parent.updateList(name, array);
+    }
+
+    /**
+     * Gets a value from the JSON list based on index.
+     * @param index The placement of the target data
+     * @return Returns the value from {@param index} in the list
+     */
+    public JsonElement get(int index) {
+        return array.get(index);
+    }
+
+    /**
+     * Removes the value at <code>index</code> from the JSON list.
+     * @param index The target index of the value to remove
+     * @return Returns <code>true</code> or <code>false</code> based on if the removal was successful
+     * @throws IOException Thrown if the JSON data fails to save to the JSON file
+     */
+    public boolean remove(int index) throws IOException {
+        if (index >= 0 && index < array.size()) {
+            array.remove(index);
+            parent.updateList(name, array);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Gets a list of all the values in the JSON list
+     * @return Returns a <code>{@literal List<JsonElement>}</code> of all values in the JSON list
+     */
+    public List<JsonElement> getAll() {
+        List<JsonElement> elements = new ArrayList<>();
+        for (JsonElement e : array) {
+            elements.add(e);
+        }
+        return elements;
+    }
+
+    /**
+     * Get the size of the JSON list.
+     * @return The size of the JSON list
+     */
+    public int size() {
+        return array.size();
+    }
+}
